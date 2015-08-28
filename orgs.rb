@@ -24,8 +24,8 @@ class RootOrg
   attr_accessor :name, :children
 
   def initialize
-      @name = "Root Org"
-      @children = []
+    @name = "Root Org"
+    @children = []
   end
 
 end
