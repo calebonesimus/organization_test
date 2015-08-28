@@ -23,6 +23,10 @@ class User
     end
   end
 
+  def has_user_access?(org)
+    true unless self.denied?(org)
+  end
+
   def has_admin_access?(org)
     if self.admin_for.include?(org)
       true

@@ -77,4 +77,36 @@ class AllOrgsTest < MiniTest::Unit::TestCase
     refute @user.admin_for.include?(@second_child)
   end
 
+  # Messy tree with a few denials
+  def test_crazy_tree
+    @second_org = Org.new("Second Org", @root)
+    @third_org = Org.new("Third Org", @root)
+    @third_child = ChildOrg.new("Third Child", @second_org)
+    @fourth_child = ChildOrg.new("Fourth Child", @org)
+    @user.make_admin_for(@root)
+    @user.deny_from(@third_org)
+    @user.deny_from(@child)
+    @user.deny_from(@third_child)
+    assert @user.has_admin_access?(@root)
+    assert @user.has_admin_access?(@org)
+    assert @user.has_admin_access?(@second_org)
+    refute @user.has_admin_access?(@third_org)
+    refute @user.has_admin_access?(@child)
+    assert @user.has_admin_access?(@second_child)
+    refute @user.has_admin_access?(@third_child)
+    assert @user.has_admin_access?(@fourth_child)
+  end
+
+  # User access and denial
+  def test_user_access_everywhere
+    assert @user.has_user_access?(@root)
+    assert @user.has_user_access?(@org)
+    assert @user.has_user_access?(@child)
+  end
+
+  def test_user_access_can_be_denied
+    @user.deny_from(@org)
+    refute @user.has_user_access?(@org), "User has user access when denied."
+  end
+
 end
