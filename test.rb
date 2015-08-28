@@ -16,30 +16,35 @@ class AllOrgsTest < MiniTest::Unit::TestCase
 
   def test_new_org_should_belong_to_root_org
     org = Org.new("Org Name", @root_org)
-    @root_org.orgs << org
+    @root_org.children << org
     assert org.parent = @root_org
-    assert @root_org.orgs.include?(org)
+    assert @root_org.children.include?(org)
   end
 
   def test_child_org_should_belong_to_org
     org = Org.new("Org Name", @root_org)
     child_org = ChildOrg.new("Child One", org)
-    org.child_orgs << child_org
+    org.children << child_org
     assert child_org.parent = org, "Child org has no parent :("
-    assert org.child_orgs.include?(child_org), "Org has no child orgs."
+    assert org.children.include?(child_org), "Org has no child orgs."
   end
 
   def test_root_org_admin_is_admin_everywhere
-    user = User.new("Superman", "admin", @root_org)
+    user = User.new("Superman")
     org = Org.new("Org Name", @root_org)
-    assert user.has_access?(org), "User can't access owned orgs"
+    child_org = ChildOrg.new("Child Org Name", org)
+    user.make_admin_for(@root_org)
+    # User should access both
+    assert user.has_admin_access?(@root_org)
+    assert user.has_admin_access?(org), "User can't access owned orgs"
+    assert user.has_admin_access?(child_org), "User can't access child org with root org access."
   end
 
-  def test_user_should_not_acces_denied_orgs
-    user = User.new("Superman", "admin", @root_org)
+  def test_user_should_not_access_denied_orgs
+    user = User.new("Superman")
     org = Org.new("Org Name", @root_org)
-    org.denied_users << user
-    refute user.has_access?(org), "User can access owned orgs"
+    user.deny_from(org)
+    refute user.has_admin_access?(org), "User can access owned orgs she is denied from."
   end
 
 end

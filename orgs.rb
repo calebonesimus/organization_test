@@ -1,11 +1,31 @@
+###########################################
+############## ORG METHODS ################
+###########################################
+module OrgMethods
+
+  def has_children?
+    if self.class == ChildOrg
+      false
+    elsif self.children.empty?
+      false
+    else
+      true
+    end
+  end
+
+end
+
+
+###########################################
+################ ROOT ORG #################
+###########################################
 class RootOrg
-  attr_accessor :name, :orgs, :denied_users
+  include OrgMethods
+  attr_accessor :name, :children
 
   def initialize
       @name = "Root Org"
-      @orgs = []
-      @denied_users = []
-      # self.class.change_new
+      @children = []
   end
 
 end
@@ -15,13 +35,14 @@ end
 ################## ORG ####################
 ###########################################
 class Org
-  attr_accessor :name, :parent, :child_orgs, :denied_users
+  include OrgMethods
+  attr_accessor :name, :parent, :children
 
   def initialize(name, parent)
     @name = name
     @parent = parent
-    @child_orgs = []
-    @denied_users = []
+    parent.children << self
+    @children = []
   end
 
 end
@@ -31,11 +52,12 @@ end
 ############### CHILD ORG #################
 ###########################################
 class ChildOrg
-  attr_accessor :name, :parent, :denied_users
+  include OrgMethods
+  attr_accessor :name, :parent
 
   def initialize(name, parent)
     @name = name
     @parent = parent
-    @denied_users = []
+    parent.children << self
   end
 end
