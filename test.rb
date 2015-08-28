@@ -1,9 +1,7 @@
 require 'rubygems'
 require 'minitest/autorun'
 
-require_relative 'root_org'
-require_relative 'org'
-require_relative 'child_org'
+require_relative 'orgs'
 require_relative 'user'
 
 class AllOrgsTest < MiniTest::Unit::TestCase
